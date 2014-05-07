@@ -6,8 +6,10 @@ server.listen(8085);
 
 
 
-var routes = require('./routes');
-routes.initialize(app);
+var routes = require('./routes')
+  , polyfills = require('./polyfills');
+routes.init(app);
+polyfills.init();
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
