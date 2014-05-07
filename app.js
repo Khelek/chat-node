@@ -1,11 +1,13 @@
-var app = require('express').createServer()
-  , io = require('socket.io').listen(app);
+var app = require('express')()
+  , server = require('http').createServer(app)
+  , io = require('socket.io').listen(server);
 
-app.listen(80);
+server.listen(8085);
 
-app.get('/', function (req, res) {
-  res.sendfile(__dirname + '/index.html');
-});
+
+
+var routes = require('./routes');
+routes.initialize(app);
 
 io.sockets.on('connection', function (socket) {
   socket.emit('news', { hello: 'world' });
@@ -13,3 +15,5 @@ io.sockets.on('connection', function (socket) {
     console.log(data);
   });
 });
+
+exports.app = app
