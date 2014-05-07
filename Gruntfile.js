@@ -15,6 +15,9 @@ module.exports = function (grunt) {
     // Time how long tasks take. Can help when optimizing build times
     require('time-grunt')(grunt);
 
+
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-contrib-coffee');
     // Configurable paths
     var config = {
         app: 'app',
@@ -32,6 +35,14 @@ module.exports = function (grunt) {
             bower: {
                 files: ['bower.json'],
                 tasks: ['bowerInstall']
+            },
+            coffee: {
+                files: ['<%= config.app %>/scripts/{,*/}*.{coffee,litcoffee,coffee.md}'],
+                tasks: ['coffee:dist']
+            },
+            coffeeTest: {
+                files: ['test/spec/{,*/}*.{coffee,litcoffee,coffee.md}'],
+                tasks: ['coffee:test', 'test:watch']
             },
             js: {
                 files: ['<%= config.app %>/scripts/{,*/}*.js'],
@@ -134,6 +145,21 @@ module.exports = function (grunt) {
             ]
         },
 
+        // server tests
+        simplemocha: {
+            options: {
+                src: '.tmp/test/chats.js',
+                globals: ['request', 'assert'],
+                timeout: 3000,
+                ignoreLeaks: false,
+                ui: 'bdd',
+                reporter: 'spec'
+            },
+
+            server: {
+                src: ['test/testhelper.js', '.tmp/test/*']
+            }
+        },
         // Mocha testing framework configuration options
         mocha: {
             all: {
@@ -141,6 +167,27 @@ module.exports = function (grunt) {
                     run: true,
                     urls: ['http://<%= connect.test.options.hostname %>:<%= connect.test.options.port %>/index.html']
                 }
+            }
+        },
+        // Compiles CoffeeScript to JavaScript
+        coffee: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= config.app %>/scripts',
+                    src: '{,*/}*.{coffee,litcoffee,coffee.md}',
+                    dest: '.tmp/scripts',
+                    ext: '.js'
+                }]
+            },
+            test: {
+                files: [{
+                    expand: true,
+                    cwd: 'test/app/controllers',
+                    src: '{,*/}*.{coffee,litcoffee,coffee.md}',
+                    dest: '.tmp/test',
+                    ext: '.js'
+                }]
             }
         },
 
@@ -201,29 +248,6 @@ module.exports = function (grunt) {
             css: ['<%= config.dist %>/styles/{,*/}*.css']
         },
 
-        // The following *-min tasks produce minified files in the dist folder
-        imagemin: {
-            dist: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= config.app %>/images',
-                    src: '{,*/}*.{gif,jpeg,jpg,png}',
-                    dest: '<%= config.dist %>/images'
-                }]
-            }
-        },
-
-        svgmin: {
-            dist: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= config.app %>/images',
-                    src: '{,*/}*.svg',
-                    dest: '<%= config.dist %>/images'
-                }]
-            }
-        },
-
         htmlmin: {
             dist: {
                 options: {
@@ -244,33 +268,6 @@ module.exports = function (grunt) {
                 }]
             }
         },
-
-        // By default, your `index.html`'s <!-- Usemin block --> will take care of
-        // minification. These next options are pre-configured if you do not wish
-        // to use the Usemin blocks.
-        // cssmin: {
-        //     dist: {
-        //         files: {
-        //             '<%= config.dist %>/styles/main.css': [
-        //                 '.tmp/styles/{,*/}*.css',
-        //                 '<%= config.app %>/styles/{,*/}*.css'
-        //             ]
-        //         }
-        //     }
-        // },
-        // uglify: {
-        //     dist: {
-        //         files: {
-        //             '<%= config.dist %>/scripts/scripts.js': [
-        //                 '<%= config.dist %>/scripts/scripts.js'
-        //             ]
-        //         }
-        //     }
-        // },
-        // concat: {
-        //     dist: {}
-        // },
-
         // Copies remaining files to places other tasks can use
         copy: {
             dist: {
@@ -321,7 +318,7 @@ module.exports = function (grunt) {
 
 
     grunt.registerTask('serve', function (target) {
-        if (target === 'dist') {
+      if (target === 'dist') {
             return grunt.task.run(['build', 'connect:dist:keepalive']);
         }
 
@@ -340,19 +337,27 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('test', function (target) {
-        if (target !== 'watch') {
+        if (target == 'client') {
+            if (target !== 'watch') {
+                grunt.task.run([
+                  'clean:server',
+                  'concurrent:test',
+                  'autoprefixer'
+                ]);
+            }
+          
             grunt.task.run([
-                'clean:server',
-                'concurrent:test',
-                'autoprefixer'
+              'connect:test',
+              'mocha'
+            ]);
+        } else {
+            grunt.task.run([
+               'coffee:test',
+               'simplemocha'
             ]);
         }
-
-        grunt.task.run([
-            'connect:test',
-            'mocha'
-        ]);
     });
+
 
     grunt.registerTask('build', [
         'clean:dist',
@@ -373,5 +378,4 @@ module.exports = function (grunt) {
         'test',
         'build'
     ]);
-  grunt.loadNpmTasks('grunt-contrib-jasmine');
 };
