@@ -149,7 +149,7 @@ module.exports = function (grunt) {
         simplemocha: {
             options: {
                 src: '.tmp/test/chats.js',
-                globals: ['request', 'assert'],
+                globals: ['request', 'assert', 'app'],
                 timeout: 3000,
                 ignoreLeaks: false,
                 ui: 'bdd',
