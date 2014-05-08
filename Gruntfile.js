@@ -17,6 +17,7 @@ module.exports = function (grunt) {
 
 
     grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-contrib-jade');
     grunt.loadNpmTasks('grunt-contrib-coffee');
     // Configurable paths
     var config = {
@@ -51,6 +52,10 @@ module.exports = function (grunt) {
                     livereload: true
                 }
             },
+            jade: {
+              files: ['<%= config.app %>/{,*/}*.jade'],
+              tasks: ['jade']
+            },
             jstest: {
                 files: ['test/spec/{,*/}*.js'],
                 tasks: ['test:watch']
@@ -59,7 +64,7 @@ module.exports = function (grunt) {
                 files: ['Gruntfile.js']
             },
             styles: {
-                files: ['<%= config.app %>/styles/{,*/}*.css'],
+                files: ['<%= config.app %>/assets/stylesheets/{,*/}*.css'],
                 tasks: ['newer:copy:styles', 'autoprefixer']
             },
             livereload: {
@@ -68,6 +73,7 @@ module.exports = function (grunt) {
                 },
                 files: [
                     '<%= config.app %>/{,*/}*.html',
+                    '.tmp/{,*/}*.html',
                     '.tmp/styles/{,*/}*.css',
                     '<%= config.app %>/images/{,*/}*'
                 ]
@@ -123,6 +129,7 @@ module.exports = function (grunt) {
                     dot: true,
                     src: [
                         '.tmp',
+                        'public',
                         '<%= config.dist %>/*',
                         '!<%= config.dist %>/.git*'
                     ]
@@ -169,6 +176,47 @@ module.exports = function (grunt) {
                 }
             }
         },
+
+        // By default, your `index.html`'s <!-- Usemin block --> will take care of
+        // minification. These next options are pre-configured if you do not wish
+        // to use the Usemin blocks.
+        // cssmin: {
+        //     dist: {
+        //         files: {
+        //             '<%= config.dist %>/styles/main.css': [
+        //                 '.tmp/styles/{,*/}*.css',
+        //                 '<%= config.app %>/assets/stylesheets/{,*/}*.css'
+        //             ]
+        //         }
+        //     }
+        // },
+        // uglify: {
+        //     dist: {
+        //         files: {
+        //             '<%= config.dist %>/scripts/scripts.js': [
+        //                 '<%= config.dist %>/scripts/scripts.js'
+        //             ]
+        //         }
+        //     }
+        // },
+        // concat: {
+        //     dist: {}
+        // },
+
+        jade: {
+          dist: {
+            options: {
+              pretty: true
+            },
+            files: [{
+              expand: true,
+              cwd: '<%= config.app %>/views',
+              dest: '.tmp',
+              src: '*.jade',
+              ext: '.html'
+            }]
+          }
+        },
         // Compiles CoffeeScript to JavaScript
         coffee: {
             dist: {
@@ -209,7 +257,7 @@ module.exports = function (grunt) {
         // Automatically inject Bower components into the HTML file
         bowerInstall: {
             app: {
-                src: ['<%= config.app %>/index.html'],
+                src: ['<%= config.app %>/views/compile.html'],
                 exclude: ['bower_components/bootstrap/dist/js/bootstrap.js']
             }
         },
@@ -236,7 +284,7 @@ module.exports = function (grunt) {
             options: {
                 dest: '<%= config.dist %>'
             },
-            html: '<%= config.app %>/index.html'
+            html: '<%= config.app %>/views/compile.html'
         },
 
         // Performs rewrites based on rev and the useminPrepare configuration
@@ -262,7 +310,7 @@ module.exports = function (grunt) {
                 },
                 files: [{
                     expand: true,
-                    cwd: '<%= config.dist %>',
+                    cwd: '.tmp',
                     src: '{,*/}*.html',
                     dest: '<%= config.dist %>'
                 }]
@@ -297,6 +345,12 @@ module.exports = function (grunt) {
                 cwd: '<%= config.app %>/styles',
                 dest: '.tmp/styles/',
                 src: '{,*/}*.css'
+            },
+            public: {
+                expand: true,
+                cwd: '.tmp/concat',
+                dest: 'public/assets',
+                src: '**'
             }
         },
 
@@ -310,8 +364,7 @@ module.exports = function (grunt) {
             ],
             dist: [
                 'copy:styles',
-                'imagemin',
-                'svgmin'
+                'jade'
             ]
         }
     });
@@ -361,6 +414,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('build', [
         'clean:dist',
+        'jade',
         'useminPrepare',
         'concurrent:dist',
         'autoprefixer',
@@ -370,7 +424,8 @@ module.exports = function (grunt) {
         'copy:dist',
         'rev',
         'usemin',
-        'htmlmin'
+        'htmlmin',
+        'copy:public'
     ]);
 
     grunt.registerTask('default', [

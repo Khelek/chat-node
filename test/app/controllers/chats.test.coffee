@@ -6,7 +6,7 @@ describe "chats controller", ->
         .expect(200, done)
 
 #    it "get show", (done) ->
-#      # запатчить chats из db
+#      # запатчить chats из db, добавить туда чат с uuid
 #      request(app)
 #        .get("/chats/123")
 #        .expect(200, done)
