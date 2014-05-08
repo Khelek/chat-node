@@ -34,9 +34,14 @@ block content
       h2 Existing chats:
     .row.marketing
       .col-lg-12.text-center
-        h4 Chatname - uuid
-        h4 Chatname - uuid
-        h4 Chatname - uuid
+        - each chat in chats
+          a(href= chat.getUrl())
+            = chat.name
+            |  - (
+            = chat.uuid
+            | )
+          br
+        br
         a(href='/chats') More chats
     .footer
       p © Company 2014

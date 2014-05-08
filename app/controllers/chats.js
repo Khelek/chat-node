@@ -1,15 +1,15 @@
 var settings = require('../../settings')
   , Chats = require('../../db/chats')
   , node_uuid = require('node-uuid')
-  , io = require('../../app').io
 module.exports = {
   index: function(req, res) {
-    res.render('chats/index', { title: 'Chats' });
+    res.render('chats/index', { title: 'Chats', chats: Chats.all() });
   },
   show: function(req, res) {
-    if (Chats.get_by_uuid(req.params.uuid)) {
+    var chat = Chats.get_by_uuid(req.params.uuid);
+    if (chat) {
       console.log(Chats.get_by_uuid(req.params.uuid).name);
-      res.sendfile(settings.PROJECT_DIR + '/app/views/index.html');
+      res.render('chats/show', { title: 'Chat - ' + chat.name, name: chat.name });
     } else {
       res.redirect('/chats')
     }

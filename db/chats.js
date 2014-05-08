@@ -3,6 +3,20 @@ var Chat = require('../app/models/chat');
 var chats = {}
 var Chats = {
   errors: "",
+  all: function() {
+    return this.limit(-1);
+  },
+  limit: function(limit) {
+    var arr = [];
+    for( var i in chats ) {
+      if (limit == 0) break;
+      if (chats.hasOwnProperty(i)){
+        arr.push(chats[i]);
+        limit--;
+      }
+    }
+    return arr;
+  },
   get_by_uuid: function(uuid) {
     return chats[uuid]
   },
@@ -25,6 +39,7 @@ var Chats = {
     } else {
       chats[chat_uuid] = new Chat(chat_uuid, chat_name)
       chats[chat_uuid].addUser(username) 
+      console.log(chats);
       return true
     }
   }

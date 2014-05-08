@@ -7,8 +7,11 @@ var Chat = function(chat_uuid, chat_name) {
 }
 
 Chat.prototype = {
+  getUrl: function() {
+    return '/chats/' + this.uuid
+  },
   userExist: function(username) {
-    chats[uuid].users.indexOf(username) != -1
+    return chats[uuid].users.indexOf(username) != -1
   },
   addUser: function(username) {
     if (this.users.indexOf(username) != -1) {
