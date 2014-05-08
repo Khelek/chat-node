@@ -4,7 +4,7 @@ var settings = require('../../settings')
   , io = require('../../app').io
 module.exports = {
   index: function(req, res) {
-    res.sendfile(settings.PROJECT_DIR + '/app/views/index.html');
+    res.render('chats/index', { title: 'Chats' });
   },
   show: function(req, res) {
     if (Chats.get_by_uuid(req.params.uuid)) {
@@ -15,11 +15,17 @@ module.exports = {
     }
   },
   new: function(req, res) {
+    res.render('chats/new', { title: 'New chat' });
+  },
+  create: function(req, res) {
+    var params = req.body;
     var uuid = node_uuid.v4()
-    if (Chats.new(uuid, req.param("name"), req.param("creator"))) {
+    if (Chats.new(uuid, params["roomname"], params["nickname"])) {
       console.log(Chats.get_by_uuid(uuid).name)
+      req.flash('success', 'Welcome to chat room!');
       res.redirect('/chats/' + uuid)
     } else {
+      req.flash('error', Chats.errors);
       res.redirect('/chats')
     }
   },

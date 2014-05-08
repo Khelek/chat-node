@@ -8,4 +8,14 @@ html
         script(src='assets/scripts/vendor.js')
         script(src='assets/scripts/plugins.js')
     body
-        block content
+      .container
+        .text-center
+          - if (messages && messages.error)
+            - each message in messages.error
+              p.alert-danger
+                span= message
+          - if (messages && messages.success)
+            - each message in messages.success
+              p.alert-success
+                span= message
+      block content
