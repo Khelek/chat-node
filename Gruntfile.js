@@ -46,7 +46,7 @@ module.exports = function (grunt) {
                 tasks: ['coffee:test', 'test:watch']
             },
             js: {
-                files: ['<%= config.app %>/scripts/{,*/}*.js'],
+                files: ['<%= config.app %>/assets/javascripts/{,*/}*.js'],
                 tasks: ['jshint'],
                 options: {
                     livereload: true
