@@ -52,6 +52,6 @@
   "scripts": {
     "start": "node app.js",
     "test": "grunt test:server",
-    "postinstall": "bower install && grunt build"
+    "postinstall": "npm install && bower install && grunt build"
   }
 }
