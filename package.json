@@ -51,7 +51,6 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "grunt test:server",
-    "postinstall": "bower install && grunt build"
+    "test": "grunt test:server"
   }
 }
