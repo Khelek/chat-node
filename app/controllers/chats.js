@@ -27,7 +27,7 @@ module.exports = {
       // Или изза того, что объект, и создается он потом? А почему
       // тогда Chats работает?
       io = require('../../app').io
-      // TODO перевести все на встроенные в socket.io rooms
+      // TODO мб перевести все на встроенные в socket.io rooms
       routes.chat_listen(io, uuid);
       res.redirect('/chats/' + uuid)
     } else {
@@ -40,15 +40,18 @@ module.exports = {
     delete chatSocket;
   },
   message: function(uuid, mess, socket, chatSocket) {
-    console.log(mess)
-    socket.get('nickname', function(err, name) {
-      if (name) {
-        var data = {nickname: name, message: mess};
-        chat.emit('message', data);
-      } else {
-        chatSocket.emit('server message', 'Please set nickname!');
-      }
-    });
+    var chat = Chats.getByUuid(uuid);
+    if (chat) {
+      socket.get('nickname', function(err, name) {
+        if (name) {
+          var data = {nickname: name, message: mess};
+          chat.pushToHistory(data);
+          chatSocket.emit('message', data);
+        } else {
+          chatSocket.emit('server message', {message: 'Please set nickname!'});
+        }
+      });
+    }
   },
   new_user: function(uuid, nickname, socket, chatSocket) {
     var chat = Chats.getByUuid(uuid);
@@ -56,6 +59,7 @@ module.exports = {
       if (chat.addUser(nickname)) {
         socket.set('nickname', nickname, function () {
           socket.emit('ready');
+          socket.emit('history', chat.history);
           chatSocket.emit('server message', {message: 'User ' + nickname + ' joins to chat'});
         });
       }
