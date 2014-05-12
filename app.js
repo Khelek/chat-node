@@ -11,7 +11,7 @@ var express = require('express')
 
 server.listen(port);
 
-console.log("server listen on " + port);
+console.log("server listen on %d", port);
 
 
 app.set('views', __dirname + '/app/views');
