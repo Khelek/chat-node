@@ -12,16 +12,18 @@ describe "chats controller", ->
 #        .expect(200, done)
   
     it "get create", (done) ->
+      # FIXME add json send
       request(app)
-        .get("/chats/new?name=cool_chat&creator=cool_nick")
+        .post("/chats")
         .expect(302)
         .end (err, res) ->
           assert(res.header['location'].contains('/chats/'), 'in /chats/ path')
           done()
 
     it "error with chat create", (done) ->
+      # FIXME add json send
       request(app)
-        .get("/chats/new")
+        .post("/chats/new")
         .expect(302)
         .end (err, res) ->
           assert.equal(res.header['location'], '/chats')

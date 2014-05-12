@@ -34,5 +34,5 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-exports.app = app
-exports.io = io
+module.exports.app = app
+module.exports.io = io

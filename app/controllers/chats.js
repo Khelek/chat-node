@@ -22,7 +22,6 @@ module.exports = {
     if (Chats.new(uuid, params["roomname"])) {
       console.log(Chats.getByUuid(uuid).name)
       req.flash('success', 'Welcome to chat room!');
-      res.cookie('nickname', params["nickname"], { maxAge: 900000, httpOnly: false});
       console.log(io);
       // FIXME чтото не инклюдится в верхней части модуля. Из-за замыкания?
       // Или изза того, что объект, и создается он потом? А почему
@@ -36,21 +35,23 @@ module.exports = {
       res.redirect('/chats')
     }
   },
-  destroy: function(uuid) {
+  destroy: function(uuid, chatSocket) {
+    Chats.removeBy(uuid);
+    delete chatSocket;
   },
-  message: function(uuid, mess, socket, chat) {
+  message: function(uuid, mess, socket, chatSocket) {
     console.log(mess)
     socket.get('nickname', function(err, name) {
-      console.log(name)
-      // если ника нет, то не оправлять
-      var data = {nickname: name, message: mess};
-      chat.emit('message', data);
+      if (name) {
+        var data = {nickname: name, message: mess};
+        chat.emit('message', data);
+      } else {
+        chatSocket.emit('server message', 'Please set nickname!');
+      }
     });
   },
   new_user: function(uuid, nickname, socket, chatSocket) {
-    // TODO находить чат по uuid и проверять его на существование
-    // и добавлять туда пользователя
-    var chat = Chats.getByUuid();
+    var chat = Chats.getByUuid(uuid);
     if (chat) {
       if (chat.addUser(nickname)) {
         socket.set('nickname', nickname, function () {
@@ -63,22 +64,17 @@ module.exports = {
     // TODO оповещать если чата нет
   },
   leave_chat: function(uuid, socket, chatSocket) {
+    var self = this;
     socket.get('nickname', function(err, name) {
-      // TODO найти пользователя в чате и удалить его оттуда,
-      // если это последний пользователь - завершить чат(destroy)
-      var chat = Chats.getByUuid();
-      console.log("delete");
+      var chat = Chats.getByUuid(uuid);
       if (chat) {
         chat.deleteUser(name);
-        console.log("delete1");
-        if (chat.usersCount == 0) {
-          console.log("delete2");
-          Chats.remove(uuid);
-          chatSocket.close();
-          console.log("delete3");
+        if (chat.usersCount() == 0) {
+          self.destroy(uuid, chatSocket);
+        } else {
+          chatSocket.emit('server message', {message: 'User ' + name + ' has left the chat'});
         }
       }
-      chatSocket.emit('server message', {message: 'User ' + name + ' has left the chat'});
-    })
+    });
   }
 }

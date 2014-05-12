@@ -8,10 +8,11 @@ var Chat = function(chat_uuid, chat_name) {
 
 Chat.prototype = {
   getUrl: function() {
+    // TODO Может стоит подключить routes и создать в нем универсальный модуль
     return '/chats/' + this.uuid
   },
   userExist: function(username) {
-    return chats[uuid].users.indexOf(username) != -1
+    return this.users.indexOf(username) != -1
   },
   addUser: function(username) {
     if (this.users.indexOf(username) != -1) {
@@ -20,6 +21,16 @@ Chat.prototype = {
       this.users.push(username)
       return true
     }
+  },
+  deleteUser: function(nickname) {
+    var ax;
+    while ((ax = this.users.indexOf(nickname)) !== -1) {
+      this.users.splice(ax, 1);
+    }
+    return this.users; 
+  },
+  usersCount: function() {
+    return this.users.length;
   }
 }
 

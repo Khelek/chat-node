@@ -5,25 +5,24 @@ module.exports.init = function(app) {
   app.get('/', welcome.index);
   app.get('/chats', chats.index);
   app.post('/chats', chats.create);
-  app.get('/chats/new', chats.new);
   app.get('/chats/:uuid', chats.show);
 }
 
-module.exports.chat_listen = function(io, uuid) {
+module.exports.chat_listen = function (io, uuid) {
   var chat = io.of('/chats/' + uuid)
     .on('connection', function(socket) {
       //FIXME change to socket.io associated data - username
       socket.on('new user', function(username) {
-        chats.new_user(uuid, username, chat);
+        chats.new_user(uuid, username, socket, chat);
       });
       socket.on('message', function(message) {
-        chats.message(uuid, message, chat);
+        chats.message(uuid, message, socket, chat);
       });
       socket.on('leave chat', function() {
-        chats.leave_chat(uuid, socket);
+        chats.leave_chat(uuid, socket, chat);
       });
       socket.on('disconnect', function() {
-        chats.leave_chat(uuid, socket);
+        chats.leave_chat(uuid, socket, chat);
       });
     });
 }

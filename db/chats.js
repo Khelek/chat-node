@@ -1,6 +1,6 @@
 var Chat = require('../app/models/chat');
 // chats = {uuid: Chat}
-var chats = {}
+var chats = {};
 var Chats = {
   errors: "",
   all: function() {
@@ -17,12 +17,12 @@ var Chats = {
     }
     return arr;
   },
-  get_by_uuid: function(uuid) {
+  getByUuid: function(uuid) {
     return chats[uuid]
   },
-  new: function(chat_uuid, chat_name, username) {
+  new: function(chat_uuid, chat_name) {
     this.errors = [];
-    if (chats[chat_uuid] || !chat_uuid || !chat_name || !username) {
+    if (chats[chat_uuid] || !chat_uuid || !chat_name) {
       if (chats[chat_uuid]){
         this.errors.push('Retry again');
       }
@@ -32,16 +32,14 @@ var Chats = {
       if (!chat_name) {
         this.errors.push('Missing chat name');
       }
-      if (!username) {
-        this.errors.push('Missing user name');
-      }
       return false
     } else {
       chats[chat_uuid] = new Chat(chat_uuid, chat_name)
-      chats[chat_uuid].addUser(username) 
-      console.log(chats);
       return true
     }
+  },
+  removeBy: function(uuid) {
+    delete chats[uuid];
   }
 }
 

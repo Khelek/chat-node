@@ -38,7 +38,7 @@ module.exports = function (grunt) {
                 tasks: ['bowerInstall']
             },
             coffee: {
-                files: ['<%= config.app %>/scripts/{,*/}*.{coffee,litcoffee,coffee.md}'],
+                files: ['<%= config.app %>/assets/javascripts/{,*/}*.{coffee,litcoffee,coffee.md}'],
                 tasks: ['coffee:dist']
             },
             coffeeTest: {
@@ -93,9 +93,7 @@ module.exports = function (grunt) {
                 options: {
                     middleware: function(connect) {
                         return [
-                            connect.static('.tmp'),
-                            connect().use('/bower_components', connect.static('./bower_components')),
-                            connect.static(config.app)
+                            connect.static('public'),
                         ];
                     }
                 }
@@ -144,10 +142,13 @@ module.exports = function (grunt) {
                 jshintrc: '.jshintrc',
                 reporter: require('jshint-stylish')
             },
+            globals: {
+              io: true
+            },
             all: [
                 'Gruntfile.js',
-                '<%= config.app %>/scripts/{,*/}*.js',
-                '!<%= config.app %>/scripts/vendor/*',
+                '<%= config.app %>/assets/javascripts/{,*/}*.js',
+                '!<%= config.app %>/assets/javascripts/vendor/*',
                 'test/spec/{,*/}*.js'
             ]
         },
@@ -155,7 +156,7 @@ module.exports = function (grunt) {
         // server tests
         simplemocha: {
             options: {
-                src: '.tmp/test/chats.js',
+                src: '.tmp/test/{,*/}*.js',
                 globals: ['request', 'assert', 'app'],
                 timeout: 3000,
                 ignoreLeaks: false,
@@ -390,7 +391,7 @@ module.exports = function (grunt) {
     });
 
     grunt.registerTask('test', function (target) {
-        if (target == 'client') {
+        if (target === 'client') {
             if (target !== 'watch') {
                 grunt.task.run([
                   'clean:server',

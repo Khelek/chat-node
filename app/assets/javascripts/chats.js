@@ -1,16 +1,5 @@
 /* global io:true*/
 $(function() {
-  function readCookie(name){
-    var c = document.cookie.split('; ');
-    var cookies = {};
-    
-    for(var i=c.length-1; i>=0; i--){
-      var C = c[i].split('=');
-      cookies[C[0]] = C[1];
-    }
-    return cookies[name] ? cookies[name] : "";
-  }
-
   //FIXME странно выглядит sendMessage без message в аргументах
   function  sendMessage() {
     socket.emit("message", $("#message-input").val());
@@ -23,7 +12,6 @@ $(function() {
   ///
   //alert(readCookie("nickname"))
   if (document.getElementById('chat-show')) {
-    $('#modal-input-nickname').val(readCookie("nickname"));
     $('#nicknameModal').modal();
     var socket = io.connect(window.location.pathname);
     $( ".set-nickname" ).click(function() {
