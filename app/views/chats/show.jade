@@ -13,13 +13,16 @@ block content
       h2 This is chat 
          =name
     .row.marketing
-      .list-group.col-lg-12.text-center
+      .list-group.col-lg-9.text-center
         #chat-text.well(style="height: 350px; text-align: justify; overflow-y: scroll;")
         .input-group
           input#message-input(type="text", class="form-control")
           span.input-group-btn
             button#send-message.btn.btn-default(type="button")
               | Send!
+      .col-lg-3
+        #chat-users.well(style="height: 350px; overflow-y: scroll")
+          
     .footer
       p © Company 2014
     .modal#nicknameModal.fade.bs-example-modal-sm(tabindex='-1', role='dialog', aria-labelledby='mySmallModalLabel', aria-hidden='true')

@@ -7,7 +7,7 @@ $(function() {
   }
 
   function isKeyEnter(e) {
-    return e.which == 13
+    return e.which == 13;
   }
 
   function addMessage(nickname, message) {
@@ -16,6 +16,16 @@ $(function() {
     var $chatText = $("#chat-text");
     $chatText.append(message);
     $chatText.scrollTop($chatText[0].scrollHeight);
+  }
+
+  function addUser(nickname) {
+    var user = ["<strong class = 'user_", nickname, "'>",
+                nickname, "<br></strong>"].join("");
+    $("#chat-users").append(user);
+  }
+
+  function deleteUser(nickname) {
+    $(".user_" + nickname).remove();
   }
   
   if (document.getElementById('chat-show')) {
@@ -48,5 +58,20 @@ $(function() {
         addMessage(history[i][0], history[i][1]);
       }      
     });
+
+    socket.on('users', function(users) {
+      for (var i = 0; i < users.length; i++) {
+        addUser(users[i]);
+      }
+    });
+
+    socket.on('new user', function(user) {
+      addUser(user.nickname);
+    });
+
+    socket.on('leave user', function(user) {
+      deleteUser(user.nickname);
+    });
+    
   }
 });

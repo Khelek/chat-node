@@ -22,7 +22,7 @@ module.exports = {
     if (Chats.new(uuid, params["roomname"])) {
       console.log(Chats.getByUuid(uuid).name)
       req.flash('success', 'Welcome to chat room!');
-      console.log(io);
+      // console.log(io);
       // FIXME чтото не инклюдится в верхней части модуля. Из-за замыкания?
       // Или изза того, что объект, и создается он потом? А почему
       // тогда Chats работает?
@@ -48,7 +48,7 @@ module.exports = {
           chat.pushToHistory(data);
           chatSocket.emit('message', data);
         } else {
-          chatSocket.emit('server message', {message: 'Please set nickname!'});
+          socket.emit('server message', {message: 'Please set nickname!'});
         }
       });
     }
@@ -60,10 +60,13 @@ module.exports = {
         socket.set('nickname', nickname, function () {
           socket.emit('ready');
           socket.emit('history', chat.history);
+          socket.emit('users', chat.users);
           chatSocket.emit('server message', {message: 'User ' + nickname + ' joins to chat'});
+          socket.broadcast.emit('new user', {nickname: nickname});
         });
+      } else {
+        socket.emit('server message', {message: 'Nickname is busy.'});
       }
-      // TODO оповещать что ник занят
     }
     // TODO оповещать если чата нет
   },
@@ -76,7 +79,10 @@ module.exports = {
         if (chat.usersCount() == 0) {
           self.destroy(uuid, chatSocket);
         } else {
-          chatSocket.emit('server message', {message: 'User ' + name + ' has left the chat'});
+          if (name) {
+            chatSocket.emit('server message', {message: 'User ' + name + ' has left the chat'});
+            socket.broadcast.emit('leave user', {nickname: name});
+          }
         }
       }
     });
