@@ -6,11 +6,12 @@ var express = require('express')
   , session = require('express-session')
   , bodyParser = require('body-parser')
   , multer  = require('multer')
-  , flash = require('express-flash');
+  , flash = require('express-flash')
+  , port = process.env.PORT || 8085;
 
-server.listen(8085);
+server.listen(port);
 
-console.log("server listen on " + 8085);
+console.log("server listen on " + port);
 
 
 app.set('views', __dirname + '/app/views');
