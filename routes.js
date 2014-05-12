@@ -1,5 +1,6 @@
 var welcome = require('./app/controllers/welcome')
   , chats = require('./app/controllers/chats')
+  , app = require('./app');
 
 module.exports.init = function(app) {
   app.get('/', welcome.index);
@@ -8,7 +9,8 @@ module.exports.init = function(app) {
   app.get('/chats/:uuid', chats.show);
 }
 
-module.exports.chat_listen = function (io, uuid) {
+module.exports.chat_listen = function (uuid) {
+  var io = app.io;
   var chat = io.of('/chats/' + uuid)
     .on('connection', function(socket) {
       //FIXME change to socket.io associated data - username

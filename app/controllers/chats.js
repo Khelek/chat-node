@@ -1,8 +1,7 @@
 var settings = require('../../settings')
   , Chats = require('../../db/chats')
   , node_uuid = require('node-uuid')
-  , routes = require('../../routes')
-  , io = require('../../app').io;
+  , routes = require('../../routes');
 module.exports = {
   index: function(req, res) {
     res.render('chats/index', { title: 'Chats', chats: Chats.all() });
@@ -10,7 +9,6 @@ module.exports = {
   show: function(req, res) {
     var chat = Chats.getByUuid(req.params.uuid);
     if (chat) {
-      console.log(Chats.getByUuid(req.params.uuid).name);
       res.render('chats/show', { title: 'Chat - ' + chat.name, name: chat.name });
     } else {
       res.redirect('/chats')
@@ -20,15 +18,8 @@ module.exports = {
     var params = req.body;
     var uuid = node_uuid.v4()
     if (Chats.new(uuid, params["roomname"])) {
-      console.log(Chats.getByUuid(uuid).name)
       req.flash('success', 'Welcome to chat room!');
-      // console.log(io);
-      // FIXME чтото не инклюдится в верхней части модуля. Из-за замыкания?
-      // Или изза того, что объект, и создается он потом? А почему
-      // тогда Chats работает?
-      io = require('../../app').io
-      // TODO мб перевести все на встроенные в socket.io rooms
-      routes.chat_listen(io, uuid);
+      routes.chat_listen(uuid);
       res.redirect('/chats/' + uuid)
     } else {
       req.flash('error', Chats.errors);

@@ -10,7 +10,7 @@ var Chats = {
     var arr = [];
     for( var i in chats ) {
       if (limit == 0) break;
-      if (chats.hasOwnProperty(i)){
+      if (chats.hasOwnProperty(i)) {
         arr.push(chats[i]);
         limit--;
       }
@@ -23,7 +23,7 @@ var Chats = {
   new: function(chat_uuid, chat_name) {
     this.errors = [];
     if (chats[chat_uuid] || !chat_uuid || !chat_name) {
-      if (chats[chat_uuid]){
+      if (chats[chat_uuid]) {
         this.errors.push('Retry again');
       }
       if (!chat_uuid) {

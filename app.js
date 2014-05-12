@@ -27,5 +27,6 @@ var routes = require('./routes')
 routes.init(app, io);
 polyfills.init();
 
-module.exports.app = app
-module.exports.io = io
+module.exports.app = app;
+module.exports.io = io;
+
