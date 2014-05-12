@@ -5,7 +5,6 @@ var express = require('express')
   , cookieParser = require('cookie-parser')
   , session = require('express-session')
   , bodyParser = require('body-parser')
-  , multer  = require('multer')
   , flash = require('express-flash')
   , port = process.env.PORT || 8085;
 
